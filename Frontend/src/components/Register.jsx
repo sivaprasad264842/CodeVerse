@@ -1,32 +1,117 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import API from "../api";
 
 function Register() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ text: "", type: "" });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage({ text: "", type: "" });
+
+        // ✅ validation
+        if (password !== confirmPassword) {
+            setMessage({ text: "Passwords do not match", type: "error" });
+            return;
+        }
+
+        if (password.length < 6) {
+            setMessage({
+                text: "Password must be at least 6 characters",
+                type: "error",
+            });
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await API.post("/auth/register", {
+                email,
+                password,
+            });
+
+            // 🔥 FIX: backend sends "msg", not "message"
+            setMessage({
+                text: res.data.msg || "Verification email sent",
+                type: "success",
+            });
+
+            // clear fields
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+        } catch (err) {
+            const errorMsg =
+                err.response?.data?.msg || // 🔥 FIX HERE
+                err.message ||
+                "Registration failed. Please try again.";
+
+            setMessage({ text: errorMsg, type: "error" });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="register">
-            <div>
-                <form id="registration-form">
-                    <h2>Register</h2>
-                    <div className="input-box">
-                        <input type="email" id="email" required />
-                        <label> Email </label>
+        <div className="auth-container">
+            <div className="auth-box">
+                <h2>Create Account</h2>
+
+                {message.text && (
+                    <div className={`message ${message.type}`}>
+                        {message.text}
                     </div>
+                )}
+
+                <form onSubmit={handleSubmit}>
                     <div className="input-box">
-                        <input type="password" id="password" required />
-                        <label> Password </label>
-                    </div>
-                    <div className="input-box">
-                        <input type="password" id="confirm-password" required />
-                        <label> Confirm Password </label>
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder=" "
+                        />
+                        <label>Email</label>
                     </div>
 
-                    <button type="submit"> Register </button>
-                    <div className="register-link">
-                        <p>
-                            Already have an account?{" "}
-                            <Link to="/login">Login</Link>
-                        </p>
+                    <div className="input-box">
+                        <input
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder=" "
+                        />
+                        <label>Password</label>
                     </div>
+
+                    <div className="input-box">
+                        <input
+                            type="password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder=" "
+                        />
+                        <label>Confirm Password</label>
+                    </div>
+
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Sending..." : "Register"}
+                    </button>
                 </form>
+
+                <div className="auth-link">
+                    <p>
+                        Already have an account? <Link to="/login">Login</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
