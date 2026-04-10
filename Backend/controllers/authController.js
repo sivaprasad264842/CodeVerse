@@ -26,7 +26,9 @@ export const registerUser = async (req, res) => {
         await sendEmail(
             email,
             "Verify your account",
-            `<h2>Click to verify</h2><a href="${verificationLink}">Verify Account</a>`,
+            `<h2>This is your account confirmation mail,
+            click to verify</h2><a href="${verificationLink}">Click here </a> to verify your account </br>
+            Thank you `,
         );
 
         res.json({ msg: "Verification email sent" });

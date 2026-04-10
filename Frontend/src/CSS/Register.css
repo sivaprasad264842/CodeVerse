@@ -1,0 +1,115 @@
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(150deg, #ffec44, #f03232);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.auth-box {
+    background: #ffffff;
+    padding: 130px 130px;
+    width: 350px;
+    border-radius: 60px;
+    box-shadow: 10px 20px 30px rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.auth-box h2 {
+    margin-bottom: 50px;
+    color: #000000;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 15px 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    font-size: 20px;
+    transition: 0.1s;
+}
+
+.input-box input:focus {
+    border-color: #2245e4;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    background: #fff;
+    padding: 0 5px;
+    color: #999;
+    font-size: 14px;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.input-box input:focus + label,
+.input-box input:not(:placeholder-shown) + label {
+    top: -8px;
+    font-size: 12px;
+    color: #667eea;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #667eea;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #5a67d8;
+}
+
+button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.message.success {
+    background: #e6fffa;
+    color: #065f46;
+}
+
+.message.error {
+    background: #ffe6e6;
+    color: #b91c1c;
+}
+
+.auth-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
