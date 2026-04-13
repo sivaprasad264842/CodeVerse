@@ -14,7 +14,7 @@ function Register() {
         e.preventDefault();
         setMessage({ text: "", type: "" });
 
-        // ✅ validation
+        
         if (password !== confirmPassword) {
             setMessage({ text: "Passwords do not match", type: "error" });
             return;

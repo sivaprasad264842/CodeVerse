@@ -11,12 +11,12 @@ function Verify() {
             try {
                 await API.get(`/auth/verify/${token}`);
 
-                // ✅ success → verified
+                
                 navigate("/login?verified=true");
             } catch (err) {
                 const errorMsg = err.response?.data?.msg;
 
-                // 🔥 FIX: differentiate errors
+                
                 if (errorMsg === "Already verified") {
                     navigate("/login?already=true");
                 } else {

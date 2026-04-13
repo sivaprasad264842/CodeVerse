@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left {
+    width: 50%;
+    resize: horizontal;
+    overflow: auto;
+    border-right: 2px solid #ccc;
+    padding: 20px;
+}
+
+.right {
+    flex: 1;
+    padding: 20px;
+}

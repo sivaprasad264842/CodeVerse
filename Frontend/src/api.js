@@ -2,10 +2,9 @@ import axios from "axios";
 
 const API = axios.create({
     baseURL: "http://localhost:5000/api",
-    withCredentials: true, // 🔥 important for future auth (cookies, sessions)
+    withCredentials: true,
 });
 
-// 🔐 Optional: attach token automatically
 API.interceptors.request.use((req) => {
     const token = localStorage.getItem("token");
 
@@ -15,5 +14,11 @@ API.interceptors.request.use((req) => {
 
     return req;
 });
+
+export const getProblems = () => API.get("/problems/all");
+
+export const createProblem = (data) => API.post("/problems/create", data);
+
+export const getProblemById = (id) => API.get(`/problems/${id}`);
 
 export default API;

@@ -4,6 +4,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
+import problemRoutes from "./routes/problemRoutes.js";
 
 const app = express();
 
@@ -15,13 +16,14 @@ app.use(express.json());
 
 app.use(
     cors({
-        origin: "http://localhost:5173", // your frontend
+        origin: "http://localhost:5173",
         credentials: true,
     }),
 );
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/problems", problemRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "API is Running" });
