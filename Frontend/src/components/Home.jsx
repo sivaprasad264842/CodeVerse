@@ -27,7 +27,15 @@ function Home() {
 
     return (
         <div className="home-container">
-            <button onClick={() => setShowModal(true)}>+ Create Problem</button>
+
+            <div className="Banner">
+                <p className="scroll-text">Welcome to Code with Shiva</p>
+            </div>
+            <div className="crtbtn">
+                <button onClick={() => setShowModal(true)}>
+                    + Create Problem
+                </button>
+            </div>
 
             {showModal && (
                 <CreateProblemModal
@@ -37,8 +45,11 @@ function Home() {
             )}
 
             <div className="problem-list">
-                {problems.map((p) => (
-                    <ProblemCard key={p.problemId} problem={p} />
+                {problems.map((p, index) => (
+                    <ProblemCard
+                        key={p.problemId}
+                        problem={{ ...p, index: index + 1 }}
+                    />
                 ))}
             </div>
 

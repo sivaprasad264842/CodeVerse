@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import API from "../api";
+import "../CSS/Login.css"
 
 function Login() {
     const [email, setEmail] = useState("");

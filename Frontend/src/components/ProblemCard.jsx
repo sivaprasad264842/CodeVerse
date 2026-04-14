@@ -8,7 +8,7 @@ function ProblemCard({ problem }) {
             className="problem-card"
             onClick={() => navigate(`/problem/${problem.problemId}`)}
         >
-            {problem.title}
+            { problem.index}. {problem.title}
         </div>
     );
 }

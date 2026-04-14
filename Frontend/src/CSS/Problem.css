@@ -1,17 +1,111 @@
 .container {
+    min-height: 100vh;
+    background: linear-gradient(150deg, #ffec44, #f03232);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
     display: flex;
-    height: 100vh;
+    gap: 20px;
+    padding: 40px;
 }
 
 .left {
-    width: 50%;
-    resize: horizontal;
-    overflow: auto;
-    border-right: 2px solid #ccc;
-    padding: 20px;
+    flex: 1;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.left h2 {
+    margin-bottom: 20px;
+}
+
+.left p {
+    line-height: 1.6;
+    font-size: 16px;
 }
 
 .right {
     flex: 1;
-    padding: 20px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right h3 {
+    color: #555;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 30px;
+    width: 500px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.modal-content textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.modal-content button {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+
+    transition: 0.3s;
+}
+
+.modal-content button:hover {
+    background: #574de2;
+}
+
+.modal-content button + button {
+    margin-top: 5px;
 }

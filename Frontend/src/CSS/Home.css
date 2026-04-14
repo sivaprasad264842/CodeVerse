@@ -1,23 +1,94 @@
-.container {
+.Banner {
+    width: 100%;
+    overflow: hidden;
+    color: #fff;
+    white-space: nowrap;
+    position: relative;
+    padding: 30px;
+}
+
+.scroll-text {
+    font-size: 50px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-left 5s linear infinite;
+}
+ @keyframes scroll-left {
+    0% {
+        transform: translateX(50%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.home-container {
+    min-height: 100vh;
+    background: linear-gradient(150deg, #ffec44, #f03232);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    padding: 100px;
+
     display: flex;
-    height: 100vh;
+    flex-direction: column;
 }
 
-.left {
-    width: 50%;
-    resize: horizontal;
-    overflow: auto;
-    border-right: 2px solid #ccc;
-    padding: 20px;
-}
-
-.right {
-    flex: 1;
-    padding: 20px;
-}
-.home-box {
+.crtbtn {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 20px;
+    right: 30px;
+}
+.logout-btn {
+    width: 100px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 200px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    transition: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+.problem-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.problem-card {
+    background: #ffffff;
+    width: 60%;
+
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.problem-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
+    background: #f9f9f9;
+}
+
+.home-box {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
 }

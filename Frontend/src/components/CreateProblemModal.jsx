@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createProblem } from "../api";
+import "../CSS/Problem.css"
 
 function CreateProblemModal({ close, refresh }) {
     const [title, setTitle] = useState("");
@@ -21,7 +22,7 @@ function CreateProblemModal({ close, refresh }) {
 
     return (
         <div className="modal">
-            <div className="modal-content">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h2>Create Problem</h2>
 
                 <input
