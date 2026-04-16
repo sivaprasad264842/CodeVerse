@@ -27,9 +27,10 @@ function Home() {
 
     return (
         <div className="home-container">
-
             <div className="Banner">
-                <p className="scroll-text">Welcome to Code with Shiva</p>
+                <p className="scroll-text">
+                    Welcome to CodeVerse - “Where Code Meets Challenge”
+                </p>
             </div>
             <div className="crtbtn">
                 <button onClick={() => setShowModal(true)}>

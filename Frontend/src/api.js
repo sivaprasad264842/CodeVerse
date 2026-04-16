@@ -20,5 +20,7 @@ export const getProblems = () => API.get("/problems/all");
 export const createProblem = (data) => API.post("/problems/create", data);
 
 export const getProblemById = (id) => API.get(`/problems/${id}`);
+export const updateProblem = (id, data) => API.put(`/problems/${id}`, data);
+export const deleteProblem = (id) => API.delete(`/problems/${id}`);
 
 export default API;

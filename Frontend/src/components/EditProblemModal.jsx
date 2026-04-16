@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { createProblem } from "../api";
-import "../CSS/Problem.css";
+import { updateProblem } from "../api";
 
-function CreateProblemModal({ close, refresh }) {
-    const [title, setTitle] = useState("");
-    const [statement, setStatement] = useState("");
+function EditProblemModal({ problem, close, refresh }) {
+    const [title, setTitle] = useState(problem.title);
+    const [statement, setStatement] = useState(problem.statement);
 
     const handleOverlayClick = (e) => {
         if (e.target.classList.contains("modal")) {
@@ -13,43 +12,34 @@ function CreateProblemModal({ close, refresh }) {
     };
 
     const handleSubmit = async () => {
-        if (!title.trim() || !statement.trim()) {
-            alert("All fields are required");
-            return;
-        }
-
         try {
-            const res = await createProblem({ title, statement });
-            console.log("Response:", res.data);
+            await updateProblem(problem.problemId, { title, statement });
             refresh();
             close();
         } catch (err) {
-            console.error("Error:", err);
+            console.error("Error : ", err);
         }
     };
 
     return (
         <div className="modal" onClick={handleOverlayClick}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2>Create Problem</h2>
+                <h2>Edit Problem</h2>
 
                 <input
-                    placeholder="Problem Name"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                 />
 
                 <textarea
-                    placeholder="Problem Statement"
                     value={statement}
                     onChange={(e) => setStatement(e.target.value)}
                 />
 
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleSubmit}>Update</button>
                 <button onClick={close}>Cancel</button>
             </div>
         </div>
     );
 }
-
-export default CreateProblemModal;
+export default EditProblemModal;

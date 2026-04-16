@@ -1,20 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.home-container {
+    min-height: 100vh;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    background: linear-gradient(150deg, #ffec44, #f03232);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .Banner {
     width: 100%;
     overflow: hidden;
     color: #fff;
     white-space: nowrap;
-    position: relative;
-    padding: 30px;
+    text-align: center;
 }
 
 .scroll-text {
     font-size: 50px;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-family: "Oswald", monospace;
     display: inline-block;
     padding-left: 100%;
-    animation: scroll-left 5s linear infinite;
+    animation: scroll-left 10s linear infinite;
 }
- @keyframes scroll-left {
+
+@keyframes scroll-left {
     0% {
         transform: translateX(50%);
     }
@@ -23,41 +38,10 @@
     }
 }
 
-.home-container {
-    min-height: 100vh;
-    background: linear-gradient(150deg, #ffec44, #f03232);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    padding: 100px;
-
-    display: flex;
-    flex-direction: column;
-}
-
 .crtbtn {
     position: fixed;
     top: 20px;
     right: 30px;
-}
-.logout-btn {
-    width: 100px;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 200px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    transition: 0.3s;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-}
-
-html,
-body {
-    height: 100%;
-    width: 100%;
 }
 
 .problem-list {
@@ -68,10 +52,10 @@ body {
 }
 
 .problem-card {
-    background: #ffffff;
+    position: relative;
     width: 60%;
-
-    padding: 20px 25px;
+    padding: 20px 70px 20px 25px;
+    background: #fff;
     border-radius: 15px;
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
     font-size: 18px;
@@ -83,12 +67,146 @@ body {
 .problem-card:hover {
     transform: translateY(-5px);
     box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
-    background: #f9f9f9;
+}
+
+.card-actions {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.editBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background-color: rgb(93, 93, 116);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.123);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.editBtn::before {
+    content: "";
+    width: 200%;
+    height: 200%;
+    background-color: rgb(102, 102, 141);
+    position: absolute;
+    z-index: 1;
+    transform: scale(0);
+    transition: all 0.3s;
+    border-radius: 50%;
+    filter: blur(10px);
+}
+
+.editBtn:hover::before {
+    transform: scale(1);
+}
+
+.editBtn:hover {
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.336);
+}
+
+.editBtn svg {
+    height: 14px;
+    fill: white;
+    z-index: 3;
+    transition: all 0.2s;
+    transform-origin: bottom;
+}
+
+.editBtn:hover svg {
+    transform: rotate(-15deg) translateX(5px);
+}
+
+.editBtn::after {
+    content: "";
+    width: 20px;
+    height: 1.5px;
+    position: absolute;
+    bottom: 14px;
+    left: -5px;
+    background-color: white;
+    border-radius: 2px;
+    z-index: 2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease-out;
+}
+
+.editBtn:hover::after {
+    transform: scaleX(1);
+    left: 0px;
+    transform-origin: right;
+}
+
+.delete-button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: red;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.trash-svg {
+    width: 100%;
+    height: 100%;
+    transform: scale(2);
+    transform-origin: center;
+    transition: transform 0.3s;
+}
+
+
+#lid-group {
+    transition: transform 0.3s;
+}
+
+.delete-button:hover {
+    background: #f12121;
+}
+
+.delete-button:hover #lid-group {
+    transform: rotate(-40deg);
+}
+
+.delete-button:hover .trash-svg {
+    transform: scale(2.5);
 }
 
 .home-box {
     margin-top: auto;
     display: flex;
     justify-content: center;
-    padding: 40px 0;
+    padding-top: 20px;
+}
+
+.logout-btn {
+    width: 120px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background: #333;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #000;
 }
