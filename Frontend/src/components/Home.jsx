@@ -10,6 +10,7 @@ function Home() {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("userId"); // ✅ fixed key
         navigate("/login");
     };
 
@@ -32,6 +33,7 @@ function Home() {
                     Welcome to CodeVerse - “Where Code Meets Challenge”
                 </p>
             </div>
+
             <div className="crtbtn">
                 <button onClick={() => setShowModal(true)}>
                     + Create Problem
@@ -50,6 +52,7 @@ function Home() {
                     <ProblemCard
                         key={p.problemId}
                         problem={{ ...p, index: index + 1 }}
+                        refresh={fetchProblems} // ✅ added
                     />
                 ))}
             </div>

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
-// REGISTER (send verification email)
+
 export const registerUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // create token with user data (NOT storing yet)
+        
         const token = jwt.sign(
             { email, password: hashedPassword },
             process.env.JWT_SECRET,
@@ -37,7 +37,7 @@ export const registerUser = async (req, res) => {
     }
 };
 
-// VERIFY EMAIL
+
 export const verifyUser = async (req, res) => {
     try {
         const { token } = req.params;
@@ -61,7 +61,7 @@ export const verifyUser = async (req, res) => {
     }
 };
 
-// LOGIN
+
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -77,7 +77,10 @@ export const loginUser = async (req, res) => {
             expiresIn: "1d",
         });
 
-        res.json({ token });
+        res.json({
+            token,
+            userId:user._id,
+        });
     } catch (err) {
         res.status(500).json({ msg: "Server error" });
     }

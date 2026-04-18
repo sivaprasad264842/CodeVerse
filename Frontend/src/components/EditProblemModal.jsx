@@ -4,6 +4,7 @@ import { updateProblem } from "../api";
 function EditProblemModal({ problem, close, refresh }) {
     const [title, setTitle] = useState(problem.title);
     const [statement, setStatement] = useState(problem.statement);
+    const [loading, setLoading] = useState(false);
 
     const handleOverlayClick = (e) => {
         if (e.target.classList.contains("modal")) {
@@ -12,12 +13,34 @@ function EditProblemModal({ problem, close, refresh }) {
     };
 
     const handleSubmit = async () => {
+        if (!title.trim() || !statement.trim()) {
+            alert("All fields are required");
+            return;
+        }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Please Login first");
+            return;
+        }
         try {
+            setLoading(true);
+
             await updateProblem(problem.problemId, { title, statement });
             refresh();
             close();
         } catch (err) {
-            console.error("Error : ", err);
+            if (err.response?.status === 403) {
+                alert("You are not allowed to edit this problem");
+            } else if (err.response?.status === 401) {
+                alert("Session expired. Please login again.");
+                localStorage.removeItem("token");
+            } else {
+                alert("Update failed");
+            }
+
+            console.error("Error:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,7 +59,9 @@ function EditProblemModal({ problem, close, refresh }) {
                     onChange={(e) => setStatement(e.target.value)}
                 />
 
-                <button onClick={handleSubmit}>Update</button>
+                <button onClick={handleSubmit} disabled={loading}>
+                    {loading ? "Updating..." : "Update"}
+                </button>
                 <button onClick={close}>Cancel</button>
             </div>
         </div>

@@ -47,16 +47,15 @@ function Login() {
                 password,
             });
 
-            // ✅ store token
-            localStorage.setItem("token", res.data.token);
 
-            // 🔥 optional: store user id (if backend sends later)
-            // localStorage.setItem("userId", res.data.userId);
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userId", res.data.userId);
+
 
             navigate("/home");
         } catch (err) {
             const errorMsg =
-                err.response?.data?.msg || // 🔥 FIX HERE
+                err.response?.data?.msg || 
                 err.message ||
                 "Login failed. Please try again.";
 

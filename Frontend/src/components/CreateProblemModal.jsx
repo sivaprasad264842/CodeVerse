@@ -5,6 +5,7 @@ import "../CSS/Problem.css";
 function CreateProblemModal({ close, refresh }) {
     const [title, setTitle] = useState("");
     const [statement, setStatement] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleOverlayClick = (e) => {
         if (e.target.classList.contains("modal")) {
@@ -17,14 +18,31 @@ function CreateProblemModal({ close, refresh }) {
             alert("All fields are required");
             return;
         }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Please login first");
+            return;
+        }
 
         try {
+            setLoading(true);
             const res = await createProblem({ title, statement });
             console.log("Response:", res.data);
+
+            setTitle("");
+            setStatement("");
             refresh();
             close();
         } catch (err) {
-            console.error("Error:", err);
+            if (err.response?.status === 401) {
+                alert("Session expired. Please login again.");
+                localStorage.removeItem("token");
+            } else {
+                alert("Failed to create problem ");
+            }
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -45,7 +63,9 @@ function CreateProblemModal({ close, refresh }) {
                     onChange={(e) => setStatement(e.target.value)}
                 />
 
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleSubmit} disabled={loading}>
+                    {loading ? "Submitting..." : "Submit"}
+                </button>
                 <button onClick={close}>Cancel</button>
             </div>
         </div>
