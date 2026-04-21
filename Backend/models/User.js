@@ -11,6 +11,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        solvedProblems: [
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Problem"
+
+        ]
     },
     { timestamps: true },
 );
