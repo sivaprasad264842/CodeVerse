@@ -27,7 +27,7 @@ function Login() {
             });
         }
 
-        // 🔥 NEW: handle verification error
+        
         if (searchParams.get("error")) {
             setMessage({
                 text: "Verification failed or expired",

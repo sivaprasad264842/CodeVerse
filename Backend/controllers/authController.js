@@ -66,6 +66,9 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        if (!email || !password)
+            return res.status(400).json({ msg: "Email and password required" }); 
+        
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 

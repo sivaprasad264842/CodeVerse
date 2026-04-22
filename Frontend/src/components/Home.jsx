@@ -10,7 +10,7 @@ function Home() {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("userId"); // ✅ fixed key
+        localStorage.removeItem("userId");
         navigate("/login");
     };
 
@@ -18,8 +18,12 @@ function Home() {
     const [showModal, setShowModal] = useState(false);
 
     const fetchProblems = async () => {
-        const res = await getProblems();
-        setProblems(res.data);
+        try {
+            const res = await getProblems();
+            setProblems(res.data);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     useEffect(() => {
@@ -50,9 +54,9 @@ function Home() {
             <div className="problem-list">
                 {problems.map((p, index) => (
                     <ProblemCard
-                        key={p.problemId}
+                        key={p.problemId || p._id}
                         problem={{ ...p, index: index + 1 }}
-                        refresh={fetchProblems} // ✅ added
+                        refresh={fetchProblems}
                     />
                 ))}
             </div>

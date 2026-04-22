@@ -1,10 +1,26 @@
-import { executeCode } from "../services/executionService";
+import { executeCode } from "../services/executionService.js";
 
 export const runCode = async (req, res) => {
     try {
-        const result = await executeCode(req.body);
+        const { code, language, input } = req.body;
+
+        if (!code || !language) {
+            return res.status(400).json({
+                error: "Code and language required",
+            });
+        }
+
+        const result = await executeCode({
+            code,
+            language,
+            input,
+        });
+
         res.json(result);
     } catch (err) {
-        res.status(500).json({ error: "Execution failed" });
+        console.error(err);
+        res.status(500).json({
+            error: "Run failed",
+        });
     }
 };

@@ -17,6 +17,13 @@ export const submitCode = async (req, res) => {
             return res.status(404).json({ error: "Problem not found" });
         }
 
+        if (!problem.testCases || problem.testCases.length === 0) {
+            
+            return res
+                .status(400)
+                .json({ error: "No test cases found for this problem" });
+        }
+
         let verdict = "Accepted";
         let totalTime = 0;
         let passed = 0;
@@ -28,11 +35,9 @@ export const submitCode = async (req, res) => {
                 input: tc.input,
             });
 
-            
-            const execTime = Number(result.time.replace("ms", "")) || 0;
+            const execTime = Number(result.time?.replace("ms", "")) || 0;
             totalTime += execTime;
 
-            
             if (result.status === "timeout") {
                 verdict = "TLE";
                 break;
@@ -48,17 +53,15 @@ export const submitCode = async (req, res) => {
                 break;
             }
 
-            // ❌ Wrong answer
-            if (result.stdout.trim() !== tc.output.trim()) {
+            if ((result.stdout || "").trim() !== (tc.output || "").trim()) {
+                // clear
                 verdict = "Wrong Answer";
                 break;
             }
 
-        
             passed++;
         }
 
-        
         const submission = await Submission.create({
             userId,
             problemId,
@@ -70,7 +73,6 @@ export const submitCode = async (req, res) => {
             totalTestCases: problem.testCases.length,
         });
 
-        
         if (verdict === "Accepted") {
             await User.findByIdAndUpdate(userId, {
                 $addToSet: { solvedProblems: problemId },

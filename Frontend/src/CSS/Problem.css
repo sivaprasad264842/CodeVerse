@@ -35,17 +35,47 @@
 .right {
     flex: 1;
     background: #ffffff;
-    padding: 30px;
+    padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.right h3 {
-    color: #555;
+.editor-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.editor-controls select,
+.editor-controls button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    resize: vertical;
+}
+
+.output {
+    /* clear */
+    background: #111;
+    color: #0f0;
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 100px;
+    overflow: auto;
+    font-family: monospace;
 }
 
 .action-buttons {

@@ -1,25 +1,27 @@
-import mongoose, { modelNames } from "mongoose";
+// backend/models/Submission.js
+
+import mongoose from "mongoose";
 
 const submissionSchema = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            required: true,
         },
         problemId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Problem",
-            required: true
+            required: true,
         },
         code: {
             type: String,
-            required: true
+            required: true,
         },
         language: {
             type: String,
             enum: ["cpp", "java", "python", "javascript"],
-            required: true
+            required: true,
         },
         verdict: {
             type: String,
@@ -28,21 +30,21 @@ const submissionSchema = new mongoose.Schema(
                 "Wrong Answer",
                 "TLE",
                 "Runtime Error",
-                "Compiler Error"
+                "Compilation Error",
             ],
-            required: true
+            required: true,
         },
         executionTime: Number,
         passedTestCases: {
             type: Number,
-            default: 0
+            default: 0,
         },
         totalTestCases: {
-            Type: Number,
-            default: 0
-        }
+            type: Number,
+            default: 0,
+        },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 export default mongoose.model("Submission", submissionSchema);

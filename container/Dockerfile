@@ -6,9 +6,9 @@ RUN apt-get update && apt-get install -y \
     npm \
     openjdk-17-jdk \
     g++ \
-    timeout \
-    && rm -rf /var/lib/apt/lists/* 
-
+    coreutils \
+    util-linux \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -21,5 +21,4 @@ RUN chmod +x runner.sh
 
 EXPOSE 5000
 
-CMD [ "node", "server.js" ]
-
+CMD ["node", "server.js"]

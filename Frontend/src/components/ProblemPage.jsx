@@ -1,24 +1,44 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Editor from "@monaco-editor/react";
 import { getProblemById, deleteProblem } from "../api";
 import EditProblemModal from "./EditProblemModal";
 import "../CSS/Problem.css";
 
 function ProblemPage() {
     const { id } = useParams();
-    const [problem, setProblem] = useState(null);
-    const [editOpen, setEditOpen] = useState(false);
     const navigate = useNavigate();
 
+    const [problem, setProblem] = useState(null);
+    const [editOpen, setEditOpen] = useState(false);
+
     const userId = localStorage.getItem("userId");
+
+    const defaultCode = {
+        javascript: "// write JavaScript code here",
+        python: "# write Python code here",
+        cpp: "#include <iostream>\nusing namespace std;\nint main() {\n\n    return 0;\n}",
+        java: "public class Main {\n    public static void main(String[] args) {\n\n    }\n}",
+    };
+
+    const [language, setLanguage] = useState("javascript");
+    const [code, setCode] = useState(defaultCode["javascript"]);
+    const [input, setInput] = useState("");
+    const [output, setOutput] = useState("");
+    const [verdict, setVerdict] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchProblem();
     }, [id]);
 
     const fetchProblem = async () => {
-        const res = await getProblemById(id);
-        setProblem(res.data);
+        try {
+            const res = await getProblemById(id);
+            setProblem(res.data);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     if (!problem) return <div>Loading...</div>;
@@ -38,6 +58,60 @@ function ProblemPage() {
         }
     };
 
+    const handleRun = async () => {
+        setLoading(true);
+        setOutput("");
+        setVerdict("");
+
+        try {
+            const res = await fetch("/api/code/run", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ code, language, input }),
+            });
+
+            const data = await res.json();
+            setOutput(data.stdout || data.stderr);
+        } catch (err) {
+            console.error(err);
+            setOutput("Error running code");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        setVerdict("");
+
+        try {
+            const res = await fetch("/api/code/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    problemId: problem._id,
+                    code,
+                    language,
+                    userId,
+                }),
+            });
+
+            const data = await res.json();
+            setVerdict(data.verdict);
+        } catch (err) {
+            console.error(err);
+            setVerdict("Submission failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="container">
             <div className="left">
@@ -51,49 +125,14 @@ function ProblemPage() {
                                 className="edit-Btn"
                                 onClick={() => setEditOpen(true)}
                             >
-                                <svg height="1em" viewBox="0 0 512 512">
-                                    <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231z"></path>
-                                </svg>
+                                Edit
                             </button>
 
                             <button
                                 className="delete-button"
                                 onClick={handleDelete}
                             >
-                                <svg
-                                    className="trash-svg"
-                                    viewBox="0 -10 64 74"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <g id="trash-can">
-                                        <rect
-                                            x="16"
-                                            y="24"
-                                            width="32"
-                                            height="30"
-                                            rx="3"
-                                            ry="3"
-                                        ></rect>
-                                        <g id="lid-group">
-                                            <rect
-                                                x="12"
-                                                y="12"
-                                                width="40"
-                                                height="6"
-                                                rx="2"
-                                                ry="2"
-                                            ></rect>
-                                            <rect
-                                                x="26"
-                                                y="8"
-                                                width="12"
-                                                height="4"
-                                                rx="2"
-                                                ry="2"
-                                            ></rect>
-                                        </g>
-                                    </g>
-                                </svg>
+                                Delete
                             </button>
                         </>
                     )}
@@ -101,7 +140,55 @@ function ProblemPage() {
             </div>
 
             <div className="right">
-                <h3>Code Editor (Coming Soon)</h3>
+                <div className="editor-controls">
+                    <select
+                        value={language}
+                        onChange={(e) => {
+                            setLanguage(e.target.value);
+                            setCode(defaultCode[e.target.value]);
+                        }}
+                    >
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="cpp">C++</option>
+                        <option value="java">Java</option>
+                    </select>
+
+                    <button onClick={handleRun}>Run</button>
+                    <button onClick={handleSubmit}>Submit</button>
+                </div>
+
+                <Editor
+                    height="400px"
+                    language={language}
+                    value={code}
+                    onChange={(value) => setCode(value || "")}
+                    theme="vs-dark"
+                />
+
+                <textarea
+                    placeholder="Custom Input"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                />
+
+                <div className="output">
+                    {loading && <p>Running...</p>}
+
+                    {output && (
+                        <>
+                            <h4>Output:</h4>
+                            <pre>{output}</pre>
+                        </>
+                    )}
+
+                    {verdict && (
+                        <>
+                            <h4>Verdict:</h4>
+                            <p>{verdict}</p>
+                        </>
+                    )}
+                </div>
             </div>
 
             {editOpen && isOwner && (
