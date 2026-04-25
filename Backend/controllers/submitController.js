@@ -5,13 +5,13 @@ import { executeCode } from "../services/executionService.js";
 
 export const submitCode = async (req, res) => {
     try {
-        const { problemId, code, language, userId } = req.body;
+        const { problemId, code, language, userId } = req.body || {};
 
         if (!problemId || !code || !language || !userId) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const problem = await Problem.findById(problemId);
+        const problem = await Problem.findOne({problemId});
 
         if (!problem) {
             return res.status(404).json({ error: "Problem not found" });

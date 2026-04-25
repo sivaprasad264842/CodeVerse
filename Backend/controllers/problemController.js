@@ -5,10 +5,11 @@ export const createProblem = async (req, res) => {
     try {
         const { title, statement, testCases } = req.body; 
         if (!title || !statement)
-            
+            {
             return res
                 .status(400)
                 .json({ message: "Title and statement required" }); 
+            }
 
         const newProblem = new Problem({
             title,
@@ -17,7 +18,7 @@ export const createProblem = async (req, res) => {
             createdBy: req.user._id,
             testCases: testCases || [], 
         });
-
+        
         await newProblem.save();
         res.status(201).json(newProblem);
     } catch (err) {
@@ -53,9 +54,9 @@ export const getProblemById = async (req, res) => {
 
         res.json(problem);
     } catch (err) {
-        // clear
+        
         console.error(err); 
-        res.status(500).json({ error: "Failed to fetch problem" }); // clear
+        res.status(500).json({ error: "Failed to fetch problem" }); 
     }
 };
 

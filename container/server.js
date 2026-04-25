@@ -1,9 +1,15 @@
 import express from "express";
 import { exec } from "child_process";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { v4 as uuid } from "uuid";
 
 const app = express();
+const PORT = process.env.PORT || 5001;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const runnerScriptPath = path.join(__dirname, "runner.sh");
 
 app.use(express.json());
 
@@ -11,10 +17,10 @@ const TIMEOUT = 2;
 
 app.post("/execute", async (req, res) => {
     try {
-        const { code, language, input } = req.body;
+        const { code, language, input } = req.body || {};
 
         if (!code || !language) {
-            // clear
+            
             return res
                 .status(400)
                 .json({ error: "Code and language required" });
@@ -52,7 +58,7 @@ app.post("/execute", async (req, res) => {
         fs.writeFileSync(`${jobDir}/${fileName}`, code);
         fs.writeFileSync(`${jobDir}/input.txt`, input || "");
 
-        const command = `cd ${jobDir} && bash /app/runner.sh "${runCmd}"`;
+        const command = `cd ${jobDir} && bash "${runnerScriptPath}" "${runCmd}"`;
 
         const start = Date.now();
 
@@ -84,4 +90,4 @@ app.post("/execute", async (req, res) => {
     }
 });
 
-app.listen(5000, () => console.log("Execution service running"));
+app.listen(PORT, () => console.log(`Execution service running on ${PORT}`));

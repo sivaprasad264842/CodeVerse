@@ -2,7 +2,7 @@ import { executeCode } from "../services/executionService.js";
 
 export const runCode = async (req, res) => {
     try {
-        const { code, language, input } = req.body;
+        const { code, language, input } = req.body || {};
 
         if (!code || !language) {
             return res.status(400).json({
@@ -18,9 +18,9 @@ export const runCode = async (req, res) => {
 
         res.json(result);
     } catch (err) {
-        console.error(err);
+        console.error(err, "Run Code Error check your code and try again");
         res.status(500).json({
-            error: "Run failed",
+            error: err.message || "Run failed",
         });
     }
 };

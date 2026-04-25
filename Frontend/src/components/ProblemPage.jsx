@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { getProblemById, deleteProblem } from "../api";
+import { getProblemById, deleteProblem, runCode, submitCode } from "../api";
 import EditProblemModal from "./EditProblemModal";
 import "../CSS/Problem.css";
 
@@ -58,52 +58,42 @@ function ProblemPage() {
         }
     };
 
+
     const handleRun = async () => {
         setLoading(true);
         setOutput("");
         setVerdict("");
 
         try {
-            const res = await fetch("/api/code/run", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ code, language, input }),
-            });
-
-            const data = await res.json();
-            setOutput(data.stdout || data.stderr);
+            const res = await runCode({ code, language, input });
+            setOutput(res.data.stdout || res.data.stderr);
         } catch (err) {
             console.error(err);
-            setOutput("Error running code");
+            const message =
+                err.response?.data?.error ||
+                err.response?.data?.message ||
+                err.message ||
+                "Error running code";
+            setOutput(message);
         } finally {
             setLoading(false);
         }
     };
 
+    
     const handleSubmit = async () => {
         setLoading(true);
         setVerdict("");
 
         try {
-            const res = await fetch("/api/code/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({
-                    problemId: problem._id,
-                    code,
-                    language,
-                    userId,
-                }),
+            const res = await submitCode({
+                problemId: problem.problemId,
+                code,
+                language,
+                userId,
             });
 
-            const data = await res.json();
-            setVerdict(data.verdict);
+            setVerdict(res.data.verdict);
         } catch (err) {
             console.error(err);
             setVerdict("Submission failed");

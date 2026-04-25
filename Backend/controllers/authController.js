@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
@@ -33,7 +34,8 @@ export const registerUser = async (req, res) => {
 
         res.json({ msg: "Verification email sent" });
     } catch (err) {
-        res.status(500).json({ msg: "Server error" });
+        console.error("Register error:", err.message);
+        res.status(500).json({ msg: err.message || "Server error" });
     }
 };
 
@@ -66,6 +68,12 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        if (mongoose.connection.readyState !== 1) {
+            return res
+                .status(503)
+                .json({ msg: "Database unavailable. Try again shortly." });
+        }
+
         if (!email || !password)
             return res.status(400).json({ msg: "Email and password required" }); 
         
@@ -85,6 +93,7 @@ export const loginUser = async (req, res) => {
             userId:user._id,
         });
     } catch (err) {
-        res.status(500).json({ msg: "Server error" });
+        console.error("Login error:", err.message);
+        res.status(500).json({ msg: err.message || "Server error" });
     }
 };

@@ -1,18 +1,12 @@
 #!/bin/bash
 
-RUN_CMD=$1
+CMD=$1
 
 ulimit -t 2
 ulimit -v 262144
 
-if ! command -v unshare &> /dev/null; then 
-    bash -c "$RUN_CMD < input.txt > output.txt 2> error.txt" 
+if ! [ -x "$(command -v unshare)" ]; then 
+    bash -c "$CMD < input.txt" 
 else
-    unshare -n bash -c "$RUN_CMD < input.txt > output.txt 2> error.txt"
+    unshare -n bash -c "$CMD < input.txt"
 fi
-
-echo "===OUTPUT==="
-cat output.txt 2>/dev/null 
-
-echo "===ERROR==="
-cat error.txt 2>/dev/null 

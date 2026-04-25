@@ -1,4 +1,3 @@
-// backend/models/Submission.js
 
 import mongoose from "mongoose";
 
@@ -10,8 +9,7 @@ const submissionSchema = new mongoose.Schema(
             required: true,
         },
         problemId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Problem",
+            type: String,
             required: true,
         },
         code: {
