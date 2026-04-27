@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
-
 export const registerUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -15,7 +14,6 @@ export const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        
         const token = jwt.sign(
             { email, password: hashedPassword },
             process.env.JWT_SECRET,
@@ -38,7 +36,6 @@ export const registerUser = async (req, res) => {
         res.status(500).json({ msg: err.message || "Server error" });
     }
 };
-
 
 export const verifyUser = async (req, res) => {
     try {
@@ -63,7 +60,6 @@ export const verifyUser = async (req, res) => {
     }
 };
 
-
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -75,22 +71,23 @@ export const loginUser = async (req, res) => {
         }
 
         if (!email || !password)
-            return res.status(400).json({ msg: "Email and password required" }); 
-        
+            return res.status(400).json({ msg: "Email and password required" });
+
         const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+        if (!user) return res.status(400).json({ msg: "Invalid username or password" });
+
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch)
             return res.status(400).json({ msg: "Invalid credentials" });
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-            expiresIn: "1d",
+            expiresIn: "7d",
         });
 
         res.json({
             token,
-            userId:user._id,
+            userId: user._id,
         });
     } catch (err) {
         console.error("Login error:", err.message);
