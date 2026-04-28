@@ -68,7 +68,7 @@ const executeCodeLocally = async ({ code, language, input = "" }) => {
         } else if (language === "python") {
             await fs.writeFile(path.join(tmpDir, "main.py"), code, "utf8");
             result = await runProcess({
-                command: "python",
+                command: "python3",
                 args: ["main.py"],
                 cwd: tmpDir,
                 input,

@@ -9,7 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const runnerScriptPath = path.join(__dirname, "runner.sh");
+const runnerScriptPath =
+    process.env.RUNNER_SCRIPT_PATH ||
+    (process.platform === "win32"
+        ? "./runner.sh"
+        : path.join(__dirname, "runner.sh"));
 
 app.use(express.json());
 
@@ -20,7 +24,6 @@ app.post("/execute", async (req, res) => {
         const { code, language, input } = req.body || {};
 
         if (!code || !language) {
-            
             return res
                 .status(400)
                 .json({ error: "Code and language required" });

@@ -19,6 +19,6 @@ COPY . .
 
 RUN chmod +x runner.sh
 
-EXPOSE 5000
+EXPOSE 5001
 
 CMD ["node", "server.js"]

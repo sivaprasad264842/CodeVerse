@@ -54,7 +54,7 @@ export const submitCode = async (req, res) => {
             }
 
             if ((result.stdout || "").trim() !== (tc.output || "").trim()) {
-                // clear
+                
                 verdict = "Wrong Answer";
                 break;
             }
