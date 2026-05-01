@@ -18,9 +18,9 @@ export const runCode = async (req, res) => {
 
         res.json(result);
     } catch (err) {
-        console.error(err, "Run Code Error check your code and try again");
+        console.error("Run Code Error:", err.message);
         res.status(500).json({
-            error: err.message || "Run failed",
+            error: "Run failed",
         });
     }
 };

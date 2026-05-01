@@ -1,9 +1,7 @@
-FROM ubuntu:22.04
+FROM node:22-bookworm-slim
 
 RUN apt-get update && apt-get install -y \
     python3 \
-    nodejs \
-    npm \
     openjdk-17-jdk \
     g++ \
     coreutils \
@@ -12,12 +10,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY package.json .
-RUN npm install
+COPY package*.json ./
+RUN npm ci --omit=dev
 
 COPY . .
-
-RUN chmod +x runner.sh
+RUN chmod +x /app/runner.sh
 
 EXPOSE 5001
 

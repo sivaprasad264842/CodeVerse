@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { getProblemById, deleteProblem, runCode, submitCode } from "../api";
 import EditProblemModal from "./EditProblemModal";
@@ -28,18 +28,18 @@ function ProblemPage() {
     const [verdict, setVerdict] = useState("");
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        fetchProblem();
-    }, [id]);
-
-    const fetchProblem = async () => {
+    const fetchProblem = useCallback(async () => {
         try {
             const res = await getProblemById(id);
             setProblem(res.data);
         } catch (err) {
             console.error(err);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        fetchProblem();
+    }, [fetchProblem]);
 
     if (!problem) return <div>Loading...</div>;
 
@@ -57,7 +57,6 @@ function ProblemPage() {
             console.error("Error:", err);
         }
     };
-
 
     const handleRun = async () => {
         setLoading(true);
@@ -80,7 +79,6 @@ function ProblemPage() {
         }
     };
 
-    
     const handleSubmit = async () => {
         setLoading(true);
         setVerdict("");
@@ -90,7 +88,6 @@ function ProblemPage() {
                 problemId: problem.problemId,
                 code,
                 language,
-                userId,
             });
 
             setVerdict(res.data.verdict);

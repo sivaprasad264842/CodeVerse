@@ -3,47 +3,43 @@ import { v4 as uuidv4 } from "uuid";
 
 export const createProblem = async (req, res) => {
     try {
-        const { title, statement, testCases } = req.body; 
-        if (!title || !statement)
-            {
+        const { title, statement, testCases } = req.body;
+        if (!title || !statement) {
             return res
                 .status(400)
-                .json({ message: "Title and statement required" }); 
-            }
+                .json({ message: "Title and statement required" });
+        }
 
         const newProblem = new Problem({
             title,
             statement,
             problemId: uuidv4(),
             createdBy: req.user._id,
-            testCases: testCases || [], 
+            testCases: testCases || [],
         });
-        
+
         await newProblem.save();
         res.status(201).json(newProblem);
     } catch (err) {
-        console.error(err); 
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 };
 
 export const getAllProblems = async (req, res) => {
     try {
-        
         const problems = await Problem.find()
             .populate("createdBy", "_id")
             .sort({ createdAt: 1 });
         res.json(problems);
     } catch (err) {
-        
-        console.error(err); 
-        res.status(500).json({ error: "Failed to fetch problems" }); 
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch problems" });
     }
 };
 
 export const getProblemById = async (req, res) => {
     try {
-        
         const problem = await Problem.findOne({
             problemId: req.params.id,
         }).populate("createdBy", "_id");
@@ -54,9 +50,8 @@ export const getProblemById = async (req, res) => {
 
         res.json(problem);
     } catch (err) {
-        
-        console.error(err); 
-        res.status(500).json({ error: "Failed to fetch problem" }); 
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch problem" });
     }
 };
 
@@ -80,7 +75,7 @@ export const updateProblem = async (req, res) => {
 
         res.json(updated);
     } catch (err) {
-        console.error(err); 
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -101,7 +96,7 @@ export const deleteProblem = async (req, res) => {
 
         res.json({ message: "Deleted" });
     } catch (err) {
-        console.error(err); 
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 };

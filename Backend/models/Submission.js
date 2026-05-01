@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const submissionSchema = new mongoose.Schema(
@@ -7,10 +6,12 @@ const submissionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
         problemId: {
             type: String,
             required: true,
+            index: true,
         },
         code: {
             type: String,

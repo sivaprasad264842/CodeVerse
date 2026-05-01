@@ -6,7 +6,9 @@ import authRoutes from "./routes/authRoutes.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import codeRoutes from "./routes/codeRoutes.js";
 
+const PORT = process.env.PORT || 5000;
 const app = express();
+let server;
 
 const allowedOrigins = [
     process.env.CLIENT_URL || "http://localhost:5173",
@@ -26,35 +28,63 @@ const corsOptions = {
     allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-//middlewares
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const startServer = async () => {
-    const dbConnected = await connectDB();
-
-    if (!dbConnected) {
-        console.warn(
-            "Starting API without MongoDB connection. DB-backed routes may fail until DB reconnects.",
-        );
-    }
-
-    app.listen(PORT, () => {
+    server = app.listen(PORT, () => {
         console.log(`Server running on ${PORT}`);
+    });
+
+    server.on("error", (err) => {
+        console.error(`Server failed to start: ${err.message}`);
+        process.exit(1);
+    });
+
+    connectDB().then((dbConnected) => {
+        if (!dbConnected) {
+            console.warn(
+                "API is running without MongoDB. DB-backed routes may fail until MongoDB is reachable.",
+            );
+        }
     });
 };
 
+const shutdown = async (signal) => {
+    console.log(`Received ${signal}. Shutting down server...`);
+
+    if (server) {
+        server.close(() => {
+            console.log("HTTP server closed");
+            process.exit(0);
+        });
+        return;
+    }
+
+    process.exit(0);
+};
+
+process.once("SIGINT", () => shutdown("SIGINT"));
+process.once("SIGTERM", () => shutdown("SIGTERM"));
+process.once("SIGUSR2", () => {
+    if (server) {
+        server.close(() => {
+            process.kill(process.pid, "SIGUSR2");
+        });
+        return;
+    }
+
+    process.kill(process.pid, "SIGUSR2");
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/problems", problemRoutes);
-app.use("/api/code", codeRoutes); 
+app.use("/api/code", codeRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "API is Running" });
 });
-
-const PORT = process.env.PORT || 5000;
 
 startServer();

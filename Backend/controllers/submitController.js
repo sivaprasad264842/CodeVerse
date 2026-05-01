@@ -5,20 +5,19 @@ import { executeCode } from "../services/executionService.js";
 
 export const submitCode = async (req, res) => {
     try {
-        const { problemId, code, language, userId } = req.body || {};
-
+        const { problemId, code, language } = req.body || {};
+        const userId = req.user?._id;
         if (!problemId || !code || !language || !userId) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const problem = await Problem.findOne({problemId});
+        const problem = await Problem.findOne({ problemId });
 
         if (!problem) {
             return res.status(404).json({ error: "Problem not found" });
         }
 
         if (!problem.testCases || problem.testCases.length === 0) {
-            
             return res
                 .status(400)
                 .json({ error: "No test cases found for this problem" });
@@ -54,7 +53,6 @@ export const submitCode = async (req, res) => {
             }
 
             if ((result.stdout || "").trim() !== (tc.output || "").trim()) {
-                
                 verdict = "Wrong Answer";
                 break;
             }
@@ -87,7 +85,7 @@ export const submitCode = async (req, res) => {
             submissionId: submission._id,
         });
     } catch (error) {
-        console.error("Submit Error:", error);
+        console.error("Submit Error:", error.message);
         return res.status(500).json({
             error: "Internal Server Error",
         });

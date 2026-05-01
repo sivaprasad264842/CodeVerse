@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
 
+mongoose.set("bufferCommands", false);
+
 const connectDB = async () => {
     try {
-        const connectionAttempt = mongoose.connect(process.env.MONGO_URI, {
+        if (!process.env.MONGO_URI) {
+            console.error("MongoDB connection failed: MONGO_URI is not configured");
+            return false;
+        }
+
+        await mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 5000,
+            connectTimeoutMS: 5000,
+            socketTimeoutMS: 5000,
         });
 
-        const timeoutGuard = new Promise((_, reject) => {
-            setTimeout(
-                () => reject(new Error("MongoDB connection timeout")),
-                6000,
-            );
-        });
-
-        await Promise.race([connectionAttempt, timeoutGuard]);
         console.log("MongoDB Connected");
         return true;
     } catch (err) {

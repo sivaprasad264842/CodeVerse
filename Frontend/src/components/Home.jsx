@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProblems } from "../api";
 import CreateProblemModal from "./CreateProblemModal";
@@ -17,17 +17,31 @@ function Home() {
     const [problems, setProblems] = useState([]);
     const [showModal, setShowModal] = useState(false);
 
-    const fetchProblems = async () => {
+    const fetchProblems = useCallback(async () => {
         try {
             const res = await getProblems();
             setProblems(res.data);
         } catch (err) {
             console.error(err);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchProblems();
+        let isMounted = true;
+
+        getProblems()
+            .then((res) => {
+                if (isMounted) {
+                    setProblems(res.data);
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     return (

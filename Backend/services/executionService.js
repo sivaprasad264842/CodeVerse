@@ -6,15 +6,29 @@ import { spawn } from "child_process";
 
 const EXECUTION_SERVICE_URL =
     process.env.EXECUTION_SERVICE_URL || "http://127.0.0.1:5001/execute";
+const ALLOW_LOCAL_EXECUTION_FALLBACK =
+    process.env.ALLOW_LOCAL_EXECUTION_FALLBACK === "true";
 
 const TIMEOUT_MS = 2000;
 
 const runProcess = ({ command, args, cwd, input = "" }) =>
     new Promise((resolve) => {
-        const child = spawn(command, args, { cwd, shell: false });
         let stdout = "";
         let stderr = "";
         let timedOut = false;
+        let child;
+
+        try {
+            child = spawn(command, args, { cwd, shell: false });
+        } catch (err) {
+            resolve({
+                stdout,
+                stderr: err.message,
+                code: 1,
+                timedOut,
+            });
+            return;
+        }
 
         const timer = setTimeout(() => {
             timedOut = true;
@@ -143,7 +157,17 @@ const executeCodeLocally = async ({ code, language, input = "" }) => {
 
 export const executeCode = async (payload) => {
     if (EXECUTION_SERVICE_URL.includes(":5000/")) {
-        return executeCodeLocally(payload);
+        if (ALLOW_LOCAL_EXECUTION_FALLBACK) {
+            return executeCodeLocally(payload);
+        }
+
+        return {
+            stdout: "",
+            stderr:
+                "Execution service URL points to the backend server. Start the Docker execution service on port 5001.",
+            status: "runtime_error",
+            time: "0ms",
+        };
     }
 
     try {
@@ -155,9 +179,19 @@ export const executeCode = async (payload) => {
             res.data.stderr.includes("/app/runner.sh: No such file or directory");
         if (missingRunnerScript) {
             console.error(
-                "EXECUTION ERROR: Remote runner script path invalid - falling back to local",
+                "EXECUTION ERROR: Remote runner script path invalid",
             );
-            return executeCodeLocally(payload);
+            if (ALLOW_LOCAL_EXECUTION_FALLBACK) {
+                return executeCodeLocally(payload);
+            }
+
+            return {
+                stdout: "",
+                stderr:
+                    "Docker execution service is misconfigured: runner script not found.",
+                status: "runtime_error",
+                time: "0ms",
+            };
         }
         return res.data;
     } catch (err) {
@@ -166,7 +200,18 @@ export const executeCode = async (payload) => {
             err.code ||
             err.message ||
             "Unknown execution service error";
-        console.error("EXECUTION ERROR:", serviceError, "- falling back to local");
-        return executeCodeLocally(payload);
+        console.error("EXECUTION ERROR:", serviceError);
+
+        if (ALLOW_LOCAL_EXECUTION_FALLBACK) {
+            return executeCodeLocally(payload);
+        }
+
+        return {
+            stdout: "",
+            stderr:
+                "Docker execution service is not reachable. Start it with Docker and make sure EXECUTION_SERVICE_URL points to http://127.0.0.1:5001/execute.",
+            status: "runtime_error",
+            time: "0ms",
+        };
     }
 };
