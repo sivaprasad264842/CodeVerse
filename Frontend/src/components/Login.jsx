@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import API from "../api";
-import "../CSS/Login.css"
+import "../CSS/Register.css";
+import "../CSS/Login.css";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -50,9 +51,11 @@ function Login() {
 
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("userId", res.data.userId);
+            localStorage.setItem("email", res.data.email);
+            localStorage.setItem("username", res.data.username || "");
 
 
-            navigate("/home");
+            navigate("/");
         } catch (err) {
             const errorMsg =
                 err.response?.data?.msg || 

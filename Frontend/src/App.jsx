@@ -5,38 +5,19 @@ import Verify from "./components/Verify";
 import Home from "./components/Home";
 import ProblemPage from "./components/ProblemPage";
 
-function PrivateRoute({ children }) {
-    const token = localStorage.getItem("token");
-    return token ? children : <Navigate to="/login" replace />;
-}
-
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/" element={<Home />} />
 
                 <Route path="/register" element={<Register />} />
                 <Route path="/verify/:token" element={<Verify />} />
                 <Route path="/login" element={<Login />} />
 
-                <Route
-                    path="/home"
-                    element={
-                        <PrivateRoute>
-                            <Home />
-                        </PrivateRoute>
-                    }
-                />
+                <Route path="/home" element={<Navigate to="/" replace />} />
 
-                <Route
-                    path="/problem/:id"
-                    element={
-                        <PrivateRoute>
-                            <ProblemPage />
-                        </PrivateRoute>
-                    }
-                />
+                <Route path="/problem/:id" element={<ProblemPage />} />
             </Routes>
         </BrowserRouter>
     );

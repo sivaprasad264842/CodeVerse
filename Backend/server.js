@@ -10,11 +10,17 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 let server;
 
+const configuredOrigins = (process.env.CLIENT_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
 const allowedOrigins = [
-    process.env.CLIENT_URL || "http://localhost:5173",
+    ...configuredOrigins,
+    configuredOrigins.length === 0 ? "http://localhost:5173" : "",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-];
+].filter(Boolean);
 
 const corsOptions = {
     origin(origin, callback) {
@@ -85,6 +91,14 @@ app.use("/api/code", codeRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "API is Running" });
+});
+
+app.get("/health", (req, res) => {
+    res.json({
+        ok: true,
+        service: "backend",
+        timestamp: new Date().toISOString(),
+    });
 });
 
 startServer();

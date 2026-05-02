@@ -11,6 +11,19 @@ const testCasesSchema = new mongoose.Schema({
     },
 });
 
+const hintSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        trim: true,
+        default: "",
+    },
+    body: {
+        type: String,
+        trim: true,
+        default: "",
+    },
+});
+
 const problemSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -19,6 +32,11 @@ const problemSchema = new mongoose.Schema({
     statement: {
         type: String,
         required: true,
+    },
+    difficulty: {
+        type: String,
+        enum: ["Easy", "Medium", "Hard"],
+        default: "Easy",
     },
     problemId: {
         type: String,
@@ -33,6 +51,10 @@ const problemSchema = new mongoose.Schema({
     },
     testCases: {
         type: [testCasesSchema],
+        default: [],
+    },
+    hints: {
+        type: [hintSchema],
         default: [],
     },
     createdAt: {

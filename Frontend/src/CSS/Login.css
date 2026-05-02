@@ -1,57 +1,9 @@
-.auth-container.login {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(150deg, #4facfe, #00f2fe);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.auth-box.login {
-    background: #ffffff;
-    padding: 12px 12px;
-    width: 350px;
-    border-radius: 50px;
-    box-shadow: 10px 20px 30px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-.auth-box.login h2 {
-    margin-bottom: 40px;
-    color: #000000;
-}
-
-.auth-container.login .input-box input {
-    width: 100%;
-    padding: 14px 10px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    outline: none;
-    font-size: 18px;
-    transition: 0.2s;
-}
-
-.auth-container.login .input-box input:focus {
-    border-color: #00c6ff;
-}
-
-.auth-container.login .input-box label {
-    color: #777;
-}
-
-.auth-container.login .input-box input:focus + label,
-.auth-container.login .input-box input:not(:placeholder-shown) + label {
-    color: #00c6ff;
-}
-
-.auth-container.login button {
-    background: #00c6ff;
-}
-
-.auth-container.login button:hover {
-    background: #0096c7;
-}
-
-.auth-container.login .auth-link a {
-    color: #00c6ff;
+.auth-container {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background:
+        radial-gradient(circle at bottom right, rgba(47, 111, 115, 0.2), transparent 30rem),
+        #0d1117;
 }

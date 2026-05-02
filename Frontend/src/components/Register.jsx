@@ -5,6 +5,7 @@ import "../CSS/Register.css";
 
 function Register() {
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,6 +34,7 @@ function Register() {
         try {
             const res = await API.post("/auth/register", {
                 email,
+                username,
                 password,
             });
 
@@ -44,6 +46,7 @@ function Register() {
 
             // clear fields
             setEmail("");
+            setUsername("");
             setPassword("");
             setConfirmPassword("");
         } catch (err) {
@@ -79,6 +82,17 @@ function Register() {
                             placeholder=" "
                         />
                         <label>Email</label>
+                    </div>
+
+                    <div className="input-box">
+                        <input
+                            type="text"
+                            required
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder=" "
+                        />
+                        <label>User name</label>
                     </div>
 
                     <div className="input-box">

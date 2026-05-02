@@ -42,6 +42,13 @@ const submissionSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        failedTestCase: {
+            index: Number,
+            input: String,
+            expectedOutput: String,
+            actualOutput: String,
+            error: String,
+        },
     },
     { timestamps: true },
 );

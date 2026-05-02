@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export const createProblem = async (req, res) => {
     try {
-        const { title, statement, testCases } = req.body;
+        const { title, statement, difficulty, testCases, hints } = req.body;
         if (!title || !statement) {
             return res
                 .status(400)
@@ -13,9 +13,18 @@ export const createProblem = async (req, res) => {
         const newProblem = new Problem({
             title,
             statement,
+            difficulty: ["Easy", "Medium", "Hard"].includes(difficulty)
+                ? difficulty
+                : "Easy",
             problemId: uuidv4(),
             createdBy: req.user._id,
             testCases: testCases || [],
+            hints: Array.isArray(hints)
+                ? hints.map((hint, index) => ({
+                      title: String(hint.title || `Hint ${index + 1}`).trim(),
+                      body: String(hint.body || "").trim(),
+                  }))
+                : [],
         });
 
         await newProblem.save();
@@ -67,10 +76,31 @@ export const updateProblem = async (req, res) => {
             return res.status(403).json({ message: "Not authorized" });
         }
 
+        const { title, statement, difficulty, testCases, hints } = req.body;
+        const update = {};
+
+        if (typeof title === "string") update.title = title.trim();
+        if (typeof statement === "string") update.statement = statement.trim();
+        if (["Easy", "Medium", "Hard"].includes(difficulty)) {
+            update.difficulty = difficulty;
+        }
+        if (Array.isArray(testCases)) {
+            update.testCases = testCases.map((tc) => ({
+                input: String(tc.input || ""),
+                output: String(tc.output || ""),
+            }));
+        }
+        if (Array.isArray(hints)) {
+            update.hints = hints.map((hint, index) => ({
+                title: String(hint.title || `Hint ${index + 1}`).trim(),
+                body: String(hint.body || "").trim(),
+            }));
+        }
+
         const updated = await Problem.findOneAndUpdate(
             { problemId: req.params.id },
-            req.body,
-            { new: true },
+            update,
+            { new: true, runValidators: true },
         );
 
         res.json(updated);

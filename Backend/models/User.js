@@ -8,6 +8,36 @@ const userSchema = new mongoose.Schema(
             unique: true,
             index: true, 
         },
+        username: {
+            type: String,
+            trim: true,
+            maxlength: 40,
+            unique: true,
+            sparse: true,
+        },
+        bio: {
+            type: String,
+            trim: true,
+            maxlength: 240,
+        },
+        profilePicture: {
+            type: String,
+            trim: true,
+        },
+        socialLinks: {
+            github: { type: String, trim: true },
+            linkedin: { type: String, trim: true },
+            website: { type: String, trim: true },
+        },
+        phone: {
+            type: String,
+            trim: true,
+            maxlength: 24,
+        },
+        resume: {
+            type: String,
+            trim: true,
+        },
         password: {
             type: String,
             required: true,
