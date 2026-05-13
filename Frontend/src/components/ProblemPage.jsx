@@ -25,6 +25,7 @@ function ProblemPage() {
     const [loginPrompt, setLoginPrompt] = useState("");
     const [revealedHints, setRevealedHints] = useState([]);
     const [activeTab, setActiveTab] = useState("statement");
+    const [submissionsOpen, setSubmissionsOpen] = useState(false);
     const [problemSubmissions, setProblemSubmissions] = useState([]);
     const [problemLeaderboard, setProblemLeaderboard] = useState([]);
     const [allSubmissions, setAllSubmissions] = useState([]);
@@ -254,6 +255,74 @@ function ProblemPage() {
     const myLeaderboardRow = problemLeaderboard.find(
         (item) => item.userId === userId,
     );
+    const submissionSummary = (
+        <div className="submission-summary-grid">
+            <div>
+                <span>Total</span>
+                <strong>{problemSubmissions.length}</strong>
+            </div>
+            <div>
+                <span>Accepted</span>
+                <strong>
+                    {
+                        problemSubmissions.filter(
+                            (item) => item.verdict === "Accepted",
+                        ).length
+                    }
+                </strong>
+            </div>
+            <div>
+                <span>Languages</span>
+                <strong>
+                    {new Set(problemSubmissions.map((item) => item.language)).size}
+                </strong>
+            </div>
+        </div>
+    );
+    const renderSubmissionHistory = (compact = false) => (
+        <div className={compact ? "submission-history compact" : "submission-history"}>
+            {!token && (
+                <div className="empty-state">Login to view your submission code.</div>
+            )}
+            {token && problemSubmissions.length === 0 && (
+                <div className="empty-state">
+                    No submissions for this problem yet.
+                </div>
+            )}
+            {problemSubmissions.map((item, index) => (
+                <details className="submission-card" key={item._id}>
+                    <summary>
+                        <span className="submission-left">
+                            <span className="submission-index">
+                                #{problemSubmissions.length - index}
+                            </span>
+                            <span
+                                className={`submission-verdict ${
+                                    item.verdict === "Accepted"
+                                        ? "accepted"
+                                        : "failed"
+                                }`}
+                            >
+                                {item.verdict}
+                            </span>
+                        </span>
+                        <small>
+                            {item.language} |{" "}
+                            {new Date(item.createdAt).toLocaleString()}
+                        </small>
+                    </summary>
+                    <div className="submission-details">
+                        <span>
+                            Passed {item.passedTestCases || 0}/
+                            {item.totalTestCases || 0}
+                        </span>
+                        <span>{item.executionTime || 0} ms</span>
+                    </div>
+                    <pre>{item.code}</pre>
+                </details>
+            ))}
+        </div>
+    );
     const startResize = (event) => {
         event.preventDefault();
         const shell = shellRef.current;
@@ -283,31 +352,37 @@ function ProblemPage() {
                 style={{ "--left-pane": `${leftPanePercent}%` }}
             >
                 <section className="statement-panel">
-                    <button className="back-link" onClick={() => navigate("/")}>
-                        Back to problems
-                    </button>
-                    <div className="problem-tabs" role="tablist">
-                        <button
-                            className={activeTab === "statement" ? "active" : ""}
-                            onClick={() => setActiveTab("statement")}
-                            type="button"
-                        >
-                            Description
+                    <div className="problem-topbar">
+                        <button className="back-link" onClick={() => navigate("/")}>
+                            Problems
                         </button>
+                        <div className="problem-tabs" role="tablist">
+                            <button
+                                className={
+                                    activeTab === "statement" ? "active" : ""
+                                }
+                                onClick={() => setActiveTab("statement")}
+                                type="button"
+                            >
+                                Description
+                            </button>
+                            <button
+                                className={
+                                    activeTab === "leaderboard" ? "active" : ""
+                                }
+                                onClick={() => setActiveTab("leaderboard")}
+                                type="button"
+                            >
+                                Leaderboard
+                            </button>
+                        </div>
                         <button
-                            className={activeTab === "submissions" ? "active" : ""}
-                            onClick={() => setActiveTab("submissions")}
+                            className="submission-window-btn"
+                            onClick={() => setSubmissionsOpen(true)}
                             type="button"
                         >
                             Submissions
                             <span>{problemSubmissions.length}</span>
-                        </button>
-                        <button
-                            className={activeTab === "leaderboard" ? "active" : ""}
-                            onClick={() => setActiveTab("leaderboard")}
-                            type="button"
-                        >
-                            Leaderboard
                         </button>
                     </div>
 
@@ -315,7 +390,6 @@ function ProblemPage() {
                         <>
                             <div className="statement-head">
                                 <div>
-                                    <p className="eyebrow">Problem</p>
                                     <h1>{problem.title}</h1>
                                 </div>
                                 <span
@@ -390,95 +464,6 @@ function ProblemPage() {
                         </>
                     )}
 
-                    {activeTab === "submissions" && (
-                        <div className="tab-panel">
-                            <div className="tab-panel-head">
-                                <div>
-                                    <p className="eyebrow">Submission history</p>
-                                    <h2>Your Submissions</h2>
-                                </div>
-                                <strong>{problemSubmissions.length}</strong>
-                            </div>
-                            {!token && (
-                                <div className="empty-state">
-                                    Login to view your submission code.
-                                </div>
-                            )}
-                            {token && problemSubmissions.length === 0 && (
-                                <div className="empty-state">
-                                    No submissions for this problem yet.
-                                </div>
-                            )}
-                            {problemSubmissions.map((item) => (
-                                <details className="submission-card" key={item._id}>
-                                    <summary>
-                                        <span
-                                            className={`submission-verdict ${
-                                                item.verdict === "Accepted"
-                                                    ? "accepted"
-                                                    : "failed"
-                                            }`}
-                                        >
-                                            {item.verdict}
-                                        </span>
-                                        <small>
-                                            {item.language} |{" "}
-                                            {new Date(
-                                                item.createdAt,
-                                            ).toLocaleString()}
-                                        </small>
-                                    </summary>
-                                    <div className="submission-details">
-                                        <span>
-                                            Passed {item.passedTestCases || 0}/
-                                            {item.totalTestCases || 0}
-                                        </span>
-                                        <span>{item.executionTime || 0} ms</span>
-                                    </div>
-                                    <pre>{item.code}</pre>
-                                </details>
-                            ))}
-
-                            <div className="problem-progress-lists">
-                                <div>
-                                    <strong>Submitted</strong>
-                                    <span>{submittedProblems.length}</span>
-                                    <ul>
-                                        {submittedProblems
-                                            .slice(0, 4)
-                                            .map((item) => (
-                                                <li key={item.problemId}>
-                                                    {item.title}
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </div>
-                                <div>
-                                    <strong>Solved</strong>
-                                    <span>{solvedProblems.length}</span>
-                                    <ul>
-                                        {solvedProblems.slice(0, 4).map((item) => (
-                                            <li key={item.problemId}>{item.title}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div>
-                                    <strong>Unsolved</strong>
-                                    <span>{unsolvedProblems.length}</span>
-                                    <ul>
-                                        {unsolvedProblems
-                                            .slice(0, 4)
-                                            .map((item) => (
-                                                <li key={item.problemId}>
-                                                    {item.title}
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
                     {activeTab === "leaderboard" && (
                         <div className="tab-panel">
                             <div className="tab-panel-head">
@@ -496,47 +481,94 @@ function ProblemPage() {
                                 {problemLeaderboard.map((user) => {
                                     const isCurrent = user.userId === userId;
                                     return (
-                                        <article
+                                        <details
                                             className={`leaderboard-row ${
                                                 isCurrent ? "current-user" : ""
                                             }`}
                                             key={user.userId}
                                         >
-                                            <span className="leaderboard-rank">
-                                                #{user.rank}
-                                            </span>
-                                            <span className="leaderboard-avatar">
-                                                {user.profilePicture ? (
-                                                    <img
-                                                        src={user.profilePicture}
-                                                        alt=""
-                                                    />
-                                                ) : (
-                                                    (
-                                                        user.username ||
-                                                        user.email ||
-                                                        "U"
-                                                    )
-                                                        .charAt(0)
-                                                        .toUpperCase()
-                                                )}
-                                            </span>
-                                            <span className="leaderboard-user">
+                                            <summary>
+                                                <span className="leaderboard-rank">
+                                                    #{user.rank}
+                                                </span>
+                                                <span className="leaderboard-avatar">
+                                                    {user.profilePicture ? (
+                                                        <img
+                                                            src={user.profilePicture}
+                                                            alt=""
+                                                        />
+                                                    ) : (
+                                                        (
+                                                            user.username ||
+                                                            user.email ||
+                                                            "U"
+                                                        )
+                                                            .charAt(0)
+                                                            .toUpperCase()
+                                                    )}
+                                                </span>
+                                                <span className="leaderboard-user">
+                                                    <strong>
+                                                        {user.username || user.email}
+                                                    </strong>
+                                                    <small>
+                                                        {user.accepted > 0
+                                                            ? `${user.accepted} accepted | ${user.submissions} submissions`
+                                                            : `${user.submissions} submissions`}
+                                                    </small>
+                                                </span>
                                                 <strong>
-                                                    {user.username || user.email}
+                                                    {user.bestTime
+                                                        ? `${user.bestTime} ms`
+                                                        : "-"}
                                                 </strong>
-                                                <small>
-                                                    {user.accepted > 0
-                                                        ? `${user.accepted} accepted | ${user.submissions} submissions`
-                                                        : `${user.submissions} submissions`}
-                                                </small>
-                                            </span>
-                                            <strong>
-                                                {user.bestTime
-                                                    ? `${user.bestTime} ms`
-                                                    : "-"}
-                                            </strong>
-                                        </article>
+                                            </summary>
+                                            <div className="leaderboard-profile">
+                                                <p>{user.bio || "No description added."}</p>
+                                                <div>
+                                                    <span>{user.email}</span>
+                                                    {user.phone && <span>{user.phone}</span>}
+                                                </div>
+                                                <div className="profile-links compact-links">
+                                                    {user.socialLinks?.github && (
+                                                        <a
+                                                            href={user.socialLinks.github}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            GitHub
+                                                        </a>
+                                                    )}
+                                                    {user.socialLinks?.linkedin && (
+                                                        <a
+                                                            href={user.socialLinks.linkedin}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            LinkedIn
+                                                        </a>
+                                                    )}
+                                                    {user.socialLinks?.website && (
+                                                        <a
+                                                            href={user.socialLinks.website}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            Website
+                                                        </a>
+                                                    )}
+                                                    {user.resume && (
+                                                        <a
+                                                            href={user.resume}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            Resume
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </details>
                                     );
                                 })}
                                 {problemLeaderboard.length === 0 && (
@@ -745,6 +777,63 @@ function ProblemPage() {
                             >
                                 Login
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {submissionsOpen && (
+                <div
+                    className="modal submission-modal"
+                    onClick={() => setSubmissionsOpen(false)}
+                >
+                    <div
+                        className="modal-content submission-window"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-head">
+                            <div>
+                                <p className="eyebrow">Submission history</p>
+                                <h2>Your Submissions</h2>
+                            </div>
+                            <button
+                                className="secondary-btn compact-btn"
+                                onClick={() => setSubmissionsOpen(false)}
+                                type="button"
+                            >
+                                Close
+                            </button>
+                        </div>
+                        {submissionSummary}
+                        {renderSubmissionHistory()}
+                        <div className="problem-progress-lists">
+                            <div>
+                                <strong>Submitted</strong>
+                                <span>{submittedProblems.length}</span>
+                                <ul>
+                                    {submittedProblems.slice(0, 4).map((item) => (
+                                        <li key={item.problemId}>{item.title}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div>
+                                <strong>Solved</strong>
+                                <span>{solvedProblems.length}</span>
+                                <ul>
+                                    {solvedProblems.slice(0, 4).map((item) => (
+                                        <li key={item.problemId}>{item.title}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div>
+                                <strong>Unsolved</strong>
+                                <span>{unsolvedProblems.length}</span>
+                                <ul>
+                                    {unsolvedProblems.slice(0, 4).map((item) => (
+                                        <li key={item.problemId}>{item.title}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

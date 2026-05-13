@@ -199,15 +199,27 @@ function Home() {
 
     const profileName = profile?.username || profileEmail;
     const profileInitial = profileName.charAt(0).toUpperCase();
+    const brandLetters = "Top Coders".split("");
 
     return (
         <div className="home-container">
             <div className="brand-strip">
-                <span>CodeVerse</span>
+                <span className="brand-name" aria-label="Top Coders">
+                    {brandLetters.map((letter, index) => (
+                        <span
+                            className={letter === " " ? "brand-space" : ""}
+                            key={`${letter}-${index}`}
+                            style={{ "--letter-index": index }}
+                            aria-hidden="true"
+                        >
+                            {letter === " " ? "\u00a0" : letter}
+                        </span>
+                    ))}
+                </span>
             </div>
             <header className="home-header">
                 <div>
-                    <p className="eyebrow">CodeVerse Online Judge</p>
+                    <p className="eyebrow">Top Coders Online Judge</p>
                     <h1>Practice problems</h1>
                 </div>
 

@@ -34,9 +34,9 @@ const runProcess = ({ command, args, cwd, input = "" }) =>
             child.kill("SIGKILL");
         }, TIMEOUT);
 
-        child.stdout.on("data", (chunk) => {
-            stdout += chunk.toString();
-        });
+            child.stdout.on("data", (chunk) => {
+                stdout += chunk.toString();
+            });
 
         child.stderr.on("data", (chunk) => {
             stderr += chunk.toString();

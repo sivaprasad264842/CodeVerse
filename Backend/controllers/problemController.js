@@ -1,6 +1,8 @@
 import Problem from "../models/Problem.js";
 import { v4 as uuidv4 } from "uuid";
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 export const createProblem = async (req, res) => {
     try {
         const { title, statement, difficulty, testCases, hints } = req.body;
@@ -35,6 +37,8 @@ export const createProblem = async (req, res) => {
     }
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 export const getAllProblems = async (req, res) => {
     try {
         const problems = await Problem.find()
@@ -46,6 +50,8 @@ export const getAllProblems = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch problems" });
     }
 };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 export const getProblemById = async (req, res) => {
     try {
@@ -63,6 +69,8 @@ export const getProblemById = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch problem" });
     }
 };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 export const updateProblem = async (req, res) => {
     try {
@@ -109,6 +117,9 @@ export const updateProblem = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 export const deleteProblem = async (req, res) => {
     try {

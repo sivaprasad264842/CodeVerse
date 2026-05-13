@@ -1,6 +1,9 @@
 import axios from "axios";
 import OpenAI from "openai";
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
 const SYSTEM_INSTRUCTION =
     "You are a concise online judge code reviewer. Explain likely bugs, complexity, edge cases, and one next improvement. Do not provide a full replacement solution unless the user asks.";
 
@@ -17,11 +20,16 @@ const providerConfig = {
     },
 };
 
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 const getProvider = () =>
-    String(process.env.AI_PROVIDER || "disabled").trim().toLowerCase();
+    String(process.env.AI_PROVIDER || "disabled")
+        .trim()
+        .toLowerCase();
 
 const buildPrompt = ({ code, language, problemTitle, statement, verdict }) => `
-Problem: ${problemTitle || "Unknown"}
+Problem: ${problemTitle || "Unknown"}   
 
 Statement:
 ${statement || ""}
@@ -34,6 +42,11 @@ ${code}
 
 Review this online judge solution concisely. Explain likely bugs, complexity, edge cases, and one next improvement.
 `;
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
 
 const getStatusPayload = () => {
     const provider = getProvider();
@@ -59,9 +72,18 @@ const getStatusPayload = () => {
     };
 };
 
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
 const normalizeProviderError = (error, provider) => {
     const status = error.status || error.response?.status || 500;
-    const providerName = provider === "gemini" ? "Gemini" : "OpenAI";
+    const providerName =
+        provider === "gemini"
+            ? "Gemini"
+            : provider === "openai"
+              ? "OpenAI"
+              : "AI provider";
     const message =
         error.response?.data?.error?.message ||
         error.response?.data?.error ||
@@ -100,8 +122,14 @@ const normalizeProviderError = (error, provider) => {
     };
 };
 
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
+
 const runGeminiAnalysis = async (prompt) => {
-    const model = process.env.GEMINI_MODEL || providerConfig.gemini.defaultModel;
+    const model =
+        process.env.GEMINI_MODEL || providerConfig.gemini.defaultModel;
     const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
         {
@@ -133,6 +161,10 @@ const runGeminiAnalysis = async (prompt) => {
     );
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
+
 const runOpenAIAnalysis = async (prompt) => {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await client.responses.create({
@@ -146,15 +178,26 @@ const runOpenAIAnalysis = async (prompt) => {
     return response.output_text || "No analysis was returned by OpenAI.";
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
+
 export const getAnalysisStatus = (req, res) => {
     res.json(getStatusPayload());
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
 export const analyzeCode = async (req, res) => {
     const { code, language, problemTitle, statement, verdict } = req.body || {};
 
-    if (!code || !language) {
-        return res.status(400).json({ error: "Code and language required" });
+    if (!code || typeof code !== "string" || !code.trim()) {
+        return res.status(400).json({ error: "Code is required." });
+    }
+
+    if (!language || typeof language !== "string" || !language.trim()) {
+        return res.status(400).json({ error: "Language is required." });
     }
 
     const status = getStatusPayload();
@@ -164,10 +207,10 @@ export const analyzeCode = async (req, res) => {
 
     const prompt = buildPrompt({
         code,
-        language,
-        problemTitle,
-        statement,
-        verdict,
+        language: language.trim(),
+        problemTitle: typeof problemTitle === "string" ? problemTitle : "",
+        statement: typeof statement === "string" ? statement : "",
+        verdict: typeof verdict === "string" ? verdict : "",
     });
 
     try {

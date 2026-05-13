@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import User from "../models/User.js";
 import sendEmail from "../utils/sendEmail.js";
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 export const registerUser = async (req, res) => {
     const { email, password, username } = req.body;
 
@@ -36,6 +38,8 @@ export const registerUser = async (req, res) => {
         res.status(500).json({ msg: err.message || "Server error" });
     }
 };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 export const verifyUser = async (req, res) => {
     try {
@@ -72,6 +76,10 @@ export const verifyUser = async (req, res) => {
         res.status(400).json({ msg: "Invalid or expired token" });
     }
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
@@ -110,6 +118,8 @@ export const loginUser = async (req, res) => {
     }
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 export const getCurrentUser = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
@@ -140,6 +150,8 @@ export const getCurrentUser = async (req, res) => {
     }
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 const cleanUrl = (value) => {
     if (!value) return "";
     const trimmed = String(value).trim();
@@ -153,6 +165,8 @@ const cleanUrl = (value) => {
     }
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 const cleanImageSource = (value) => {
     if (!value) return "";
     const trimmed = String(value).trim();
@@ -163,6 +177,10 @@ const cleanImageSource = (value) => {
 
     return cleanUrl(trimmed);
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 export const updateCurrentUser = async (req, res) => {
     try {
@@ -220,6 +238,10 @@ export const updateCurrentUser = async (req, res) => {
         res.status(500).json({ msg: "Failed to update profile" });
     }
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 export const getLeaderboard = async (req, res) => {
     try {

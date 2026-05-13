@@ -123,6 +123,11 @@ export const submitCode = async (req, res) => {
     }
 };
 
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
+
 export const getMySubmissions = async (req, res) => {
     try {
         const submissions = await Submission.find({ userId: req.user._id })
@@ -135,6 +140,10 @@ export const getMySubmissions = async (req, res) => {
         res.status(500).json({ error: "Failed to load submissions" });
     }
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 export const getMyProblemSubmissions = async (req, res) => {
     try {
@@ -151,6 +160,10 @@ export const getMyProblemSubmissions = async (req, res) => {
         res.status(500).json({ error: "Failed to load submissions" });
     }
 };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
 
 export const getProblemLeaderboard = async (req, res) => {
     try {
