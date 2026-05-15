@@ -11,9 +11,17 @@ const TEMP_ROOT = process.env.TEMP_DIR || path.join(APP_DIR, "temp");
 const RUNNER_SCRIPT_PATH =
     process.env.RUNNER_SCRIPT_PATH || path.join(APP_DIR, "runner.sh");
 
-app.use(express.json());
+app.use(express.json({ limit: "256kb" }));
 
 const TIMEOUT = 2000;
+
+app.get("/health", (req, res) => {
+    res.json({
+        ok: true,
+        service: "runner",
+        timestamp: new Date().toISOString(),
+    });
+});
 
 const runProcess = ({ command, args, cwd, input = "" }) =>
     new Promise((resolve) => {
@@ -34,9 +42,9 @@ const runProcess = ({ command, args, cwd, input = "" }) =>
             child.kill("SIGKILL");
         }, TIMEOUT);
 
-            child.stdout.on("data", (chunk) => {
-                stdout += chunk.toString();
-            });
+        child.stdout.on("data", (chunk) => {
+            stdout += chunk.toString();
+        });
 
         child.stderr.on("data", (chunk) => {
             stderr += chunk.toString();
@@ -134,6 +142,8 @@ const sendDirectResult = async ({ res, language, jobDir, input, startedAt }) => 
 };
 
 app.post("/execute", async (req, res) => {
+    let jobDir;
+
     try {
         const { code, input = "", language } = req.body || {};
         const jobId = req.body?.jobId || uuid();
@@ -144,7 +154,7 @@ app.post("/execute", async (req, res) => {
                 .json({ error: "code and language required" });
         }
 
-        const jobDir = path.join(TEMP_ROOT, jobId);
+        jobDir = path.join(TEMP_ROOT, jobId);
         fs.mkdirSync(jobDir, { recursive: true });
         fs.writeFileSync(path.join(jobDir, "input.txt"), input, "utf8");
 
@@ -226,6 +236,9 @@ app.post("/execute", async (req, res) => {
         );
     } catch (err) {
         console.error(err.message);
+        if (jobDir && fs.existsSync(jobDir)) {
+            fs.rmSync(jobDir, { recursive: true, force: true });
+        }
         res.status(500).json({ error: "Execution failed" });
     }
 });
